@@ -1,0 +1,4 @@
+*.log
+supported.txt
+__pycache__/
+applist.json
