@@ -101,6 +101,13 @@ class main(SteamInstalledParser, SteamAppAPI):
     def setup_gameNames(self):
         self.gameNames = dict([(x['appid'], x['name']) for x in self.allSteamApps['applist']['apps'] if x['appid'] in self.gameIDs])
     
+    def sortCloudList(self, supported: dict) -> dict:
+        # Start with cloud supported then non cloud supported
+        # Ideally print Cloud supported + unknown game > cloud not supported + unknown game
+        supported = {k: v for k, v in sorted(supported.items(), key=lambda item: item[1], reverse=True)}
+        return supported
+    
+    
     def check_cloud(self):
         # check if supported.txt exists
         if os.path.exists("supported.txt"):
@@ -112,31 +119,26 @@ class main(SteamInstalledParser, SteamAppAPI):
                 with open("supported.txt", "r") as f:
                     data = f.read()
                     supported = json.loads(data)
-                    
-                    # map gameIDs to names
-                    # self.gameNames = dict([(x['appid'], x['name']) for x in self.allSteamApps['applist']['apps'] if x['appid'] in self.gameIDs])
                     logger.debug(supported.keys())
 
-                    # self.gameNames = dict([(x['appid'], x['name']) for x in self.allSteamApps['applist']['apps'] if x['appid'] in supported.keys()])
                     # update gameIDs with supported
                     self.gameIDs.union(supported.keys())
                     
                     self.setup_gameNames()
                     
-                    # self.gameNames = dict([(x['appid'], x['name']) for x in self.allSteamApps['applist']['apps'] if str(x['appid']) in (list(supported.keys()))])
                     
                     for item in supported.keys():
                         if int(item) not in self.gameNames.keys():
                             logger.debug(f"Item: {item}, not in self.gameNames, {self.gameNames}")
                             self.gameNames[int(item)] = "Unknown"
-                    
+                            
+                    supported = self.sortCloudList(supported)
                     
                     logger.debug(f"###############\n##############\nKEY asdasdsas {supported},\n######,{self.gameNames}")
 
                     logger.debug(f"Supported {supported}")
                     for item in supported:
                         print(self.formatter(supported, item))
-                        # print(f"GameID {Fore.CYAN}{item}_{self.gameNames[int(item)]}{Style.RESET_ALL}: {Fore.GREEN if supported[item] else Fore.RED}Cloud{Style.RESET_ALL}.")
                 return
         
         supported = {}
@@ -145,19 +147,16 @@ class main(SteamInstalledParser, SteamAppAPI):
                 supported[game] = True
             else:
                 supported[game] = False
-                
-        self.gameNames = dict([(x['appid'], x['name']) for x in self.allSteamApps['applist']['apps'] if str(x['appid']) in (list(supported.keys()))])
+        self.gameIDs.union(supported.keys())
+        self.setup_gameNames()
                     
         for item in supported.keys():
             if int(item) not in self.gameNames.keys():
                 logger.debug(f"Item: {item}, not in self.gameNames, {self.gameNames}")
                 self.gameNames[int(item)] = "Unknown"
-        
-        # for item in supported.items():
-        #     print(f"GameID {Fore.GREEN}{item[0]}{Style.RESET_ALL}: {Fore.GREEN if item[1] else Fore.RED}Cloud{Style.RESET_ALL}.")
+
         for item in supported:
-            print(self.formatter(supported, item))
-            # print(f"GameID {Fore.CYAN}{item}_{self.gameNames[int(item)]}{Style.RESET_ALL}: {Fore.GREEN if supported[item] else Fore.RED}Cloud{Style.RESET_ALL}.")    
+            print(self.formatter(supported, item)) 
         
         with open("supported.txt", "w") as f:
             json.dump(supported, f)
