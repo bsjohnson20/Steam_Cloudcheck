@@ -70,7 +70,7 @@ class main(SteamInstalledParser, SteamAppAPI):
                 self.logger.info("Goodbye")
     
     # Provide input for one gameID
-    def user_single_input(self):
+    def user_single_input(self) -> None:
         action = InquirerPy.inquirer.text(
             message="Enter gameID:",
             default="",
@@ -80,7 +80,7 @@ class main(SteamInstalledParser, SteamAppAPI):
         print(f"GameID {Fore.GREEN}{self.gameNames[int(action)]}{Style.RESET_ALL}: {Fore.GREEN if self.game_has_cloud(action) else Fore.RED}Cloud{Style.RESET_ALL}.")
         
     
-    def game_has_cloud(self,app_id):
+    def game_has_cloud(self,app_id) -> bool:
         js = self.get_game_details(app_id)
         if js == 'details not found':
             # print("details not found")
@@ -94,7 +94,7 @@ class main(SteamInstalledParser, SteamAppAPI):
             # print("Key Error")
             return False
     
-    def formatter(self, gameList, item):
+    def formatter(self, gameList, item) -> str:
         # Example output: GameID <blue>3490390_Sandustry Demo: <green>Cloud .
         return f"GameID {Fore.CYAN}{item}_{self.gameNames[int(item)]}{Style.RESET_ALL}: {Fore.GREEN if gameList[item] else Fore.RED}Cloud{Style.RESET_ALL}."
     
