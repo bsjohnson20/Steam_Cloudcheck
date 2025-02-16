@@ -14,7 +14,6 @@ from colorama import Fore, Back, Style
 from functools import lru_cache
 
 
-
 from time import time as now
 def timer_func(func): 
     # This function shows the execution time of  
@@ -28,7 +27,6 @@ def timer_func(func):
             f.write(time_str + '\n')
         return result 
     return wrap_func 
-
 
 
 def progressbar(it, prefix="", size=60, out=sys.stdout): # Python3.6+
@@ -48,17 +46,20 @@ def progressbar(it, prefix="", size=60, out=sys.stdout): # Python3.6+
     print("\n", flush=True, file=out)
 
 class main(SteamInstalledParser, SteamAppAPI):
-    def __init__(self):
+    def __init__(self, test=False):
         SteamInstalledParser.__init__(self)
         SteamAppAPI.__init__(self)
     
+        self.fetch_app_list()
+    
+        if test:
+            return
+        
         self.banner()
         
         self.user_input()
         self.parse_vdf()
         
-        # fetch app list
-        self.fetch_app_list()
         self.gameNames = dict([(x['appid'], x['name']) for x in self.allSteamApps['applist']['apps'] if x['appid'] in self.gameIDs])
         
         # replace appids without name with "Unknown"
@@ -98,20 +99,6 @@ class main(SteamInstalledParser, SteamAppAPI):
         # Print GameID and green cloud if supported, else red cloud
         print(f"GameID {Fore.GREEN}{self.gameNames[int(action)]}{Style.RESET_ALL}: {Fore.GREEN if self.game_has_cloud(action) else Fore.RED}Cloud{Style.RESET_ALL}.")
         
-    @timer_func
-    def game_has_cloud(self,app_id) -> bool:
-        js = self.get_game_details(app_id)
-        if js == 'details not found':
-            # print("details not found")
-            return False
-        try:
-            categories = {category['id']: category['description'] for category in js['categories']}
-            categories[23]
-            return True
-
-        except KeyError:
-            # print("Key Error")
-            return False
     # @timer_func
     def formatter(self, gameList, item) -> str:
         # Example output: GameID <blue>3490390_Sandustry Demo: <green>Cloud .

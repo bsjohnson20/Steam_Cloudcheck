@@ -45,6 +45,20 @@ class SteamAppAPI():
         
         return logger
     
+    def game_has_cloud(self,app_id) -> bool:
+        js = self.get_game_details(app_id)
+        if js == 'details not found':
+            # print("details not found")
+            return False
+        try:
+            categories = {category['id']: category['description'] for category in js['categories']}
+            categories[23]
+            return True
+
+        except KeyError:
+            # print("Key Error")
+            return False
+    
     def write_app_list(self):
         self.debug("Writing app list to file")
         with open('applist.json', 'w') as f:
@@ -71,6 +85,11 @@ class SteamAppAPI():
             return game_data
         else:
             return 'details not found'
+
+
+def main():
+    app = SteamAppAPI()
+    # app.get_game_details(728880)
 
 if __name__ == "__main__":
     app = SteamAppAPI()
