@@ -4,7 +4,7 @@
 ROOT_DIR:=$(shell dirname $(realpath $(firstword $(MAKEFILE_LIST))))
 
 .PHONY: all
-all: uv_install pytest requirements pyinstaller_linux pyinstaller_windows
+all: uv_install pytest requirements build
 
 .PHONY: run
 run:
@@ -17,6 +17,9 @@ uv_install:
 .PHONY: pytest
 pytest:
 	pytest
+
+build: pyinstaller_linux pyinstaller_windows
+	
 
 .PHONY: pyinstaller_linux
 pyinstaller_linux:

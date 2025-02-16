@@ -25,7 +25,7 @@ def test_cloud_support_true():
     
 def test_cloud_support_false():
     api = steam_app_api.SteamAppAPI()
-    app_id = 728881
+    app_id = 553850
     cloud = api.game_has_cloud(app_id)
     assert cloud == False
 
