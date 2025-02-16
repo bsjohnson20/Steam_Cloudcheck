@@ -1,6 +1,7 @@
 # parses a passed file and returns maps games installed
 import os, re
 
+import platform
 
 from InquirerPy import inquirer, prompt
 from InquirerPy.validator import PathValidator
@@ -37,7 +38,11 @@ class SteamInstalledParser:
         self.debug(f"Parsing vdf {self.vdf}")
         
         # convert relative path to absolute path
-        self.vdf = os.path.expanduser(self.vdf)
+        # Not sure on windows
+        if platform.system() == "Windows":
+            self.vdf = os.path.abspath(self.vdf)
+        else:
+            self.vdf = os.path.expanduser(self.vdf)
         
         with open(self.vdf, 'r') as f:
             data = f.read()
