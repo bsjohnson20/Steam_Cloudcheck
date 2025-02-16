@@ -10,7 +10,6 @@ This project depends on the following libraries:
 
 - colorama >= 0.4.6
 - inquirerpy >= 0.3.4
-- pandas >= 2.2.3
 - pyinstaller >= 6.12.0
 - pytest >= 8.3.4
 - requests >= 2.32.3

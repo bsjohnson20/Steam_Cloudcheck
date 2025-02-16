@@ -10,8 +10,11 @@ from InquirerPy.base.control import Choice
 from InquirerPy.separator import Separator
 logger = logging.getLogger('main')
 import sys
-from colorama import Fore, Back, Style
+from colorama import Fore, Back, Style, just_fix_windows_console
 from functools import lru_cache
+import platform # for windows to fix colorama
+
+
 
 
 from time import time as now
@@ -68,26 +71,29 @@ class main(SteamInstalledParser, SteamAppAPI):
                 self.gameNames[i] = "Unknown"
         
         logger.debug(self.gameNames)
-        # Display prompt 
-        action = InquirerPy.inquirer.select(
-        message="Select an action:",
-        choices=[
-            "1. Check specific gameID",
-            "2. Check all games in library (vdf)",
-            Choice(value=None, name="Exit"),
-        ],
-        default=None,
-        )
-        action.execute()
-        # print((action.result_value))
-    
-        match action.result_value:
-            case "1. Check specific gameID":
-                self.user_single_input()
-            case "2. Check all games in library (vdf)":
-                self.check_cloud()
-            case _:
-                self.logger.info("Goodbye")
+        
+        while True: # keep in menu
+            # Display prompt 
+            action = InquirerPy.inquirer.select(
+            message="Select an action:",
+            choices=[
+                "1. Check specific gameID",
+                "2. Check all games in library (vdf)",
+                Choice(value=None, name="Exit"),
+            ],
+            default=None,
+            )
+            action.execute()
+            # print((action.result_value))
+
+            match action.result_value:
+                case "1. Check specific gameID":
+                    self.user_single_input()
+                case "2. Check all games in library (vdf)":
+                    self.check_cloud()
+                case _:
+                    self.logger.info("Goodbye")
+                    break
     
     # Provide input for one gameID
     def user_single_input(self) -> None:
@@ -183,4 +189,8 @@ class main(SteamInstalledParser, SteamAppAPI):
     
 
 if __name__ == "__main__":
+    
+    # Colorama initialise terminal on windows
+    if platform.system() == "Windows":
+        just_fix_windows_console()
     main()
