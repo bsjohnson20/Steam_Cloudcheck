@@ -11,6 +11,25 @@ from InquirerPy.separator import Separator
 logger = logging.getLogger('main')
 import sys
 from colorama import Fore, Back, Style
+from functools import lru_cache
+
+
+
+from time import time
+def timer_func(func): 
+    # This function shows the execution time of  
+    # the function object passed 
+    def wrap_func(*args, **kwargs): 
+        t1 = time() 
+        result = func(*args, **kwargs) 
+        t2 = time() 
+        time_str = (f'Function {func.__name__!r} executed in {(t2-t1):.4f}s') 
+        with open('timings.txt', 'a') as f:
+            f.write(time_str + '\n')
+        return result 
+    return wrap_func 
+
+
 
 def progressbar(it, prefix="", size=60, out=sys.stdout): # Python3.6+
     count = len(it)
@@ -79,7 +98,7 @@ class main(SteamInstalledParser, SteamAppAPI):
         # Print GameID and green cloud if supported, else red cloud
         print(f"GameID {Fore.GREEN}{self.gameNames[int(action)]}{Style.RESET_ALL}: {Fore.GREEN if self.game_has_cloud(action) else Fore.RED}Cloud{Style.RESET_ALL}.")
         
-    
+    @timer_func
     def game_has_cloud(self,app_id) -> bool:
         js = self.get_game_details(app_id)
         if js == 'details not found':
@@ -93,11 +112,11 @@ class main(SteamInstalledParser, SteamAppAPI):
         except KeyError:
             # print("Key Error")
             return False
-    
+    # @timer_func
     def formatter(self, gameList, item) -> str:
         # Example output: GameID <blue>3490390_Sandustry Demo: <green>Cloud .
         return f"GameID {Fore.CYAN}{item}_{self.gameNames[int(item)]}{Style.RESET_ALL}: {Fore.GREEN if gameList[item] else Fore.RED}Cloud{Style.RESET_ALL}."
-    
+    @timer_func
     def setup_gameNames(self):
         self.gameNames = dict([(x['appid'], x['name']) for x in self.allSteamApps['applist']['apps'] if x['appid'] in self.gameIDs])
     
