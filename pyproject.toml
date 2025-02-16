@@ -1,7 +1,7 @@
 [project]
 name = "steam-cloudcheck"
 version = "0.1.0"
-description = "Add your description here"
+description = "Currently only checks installed games (for checking all games option) if they have CLOUD support.\nThe intention is so you know what to backup."
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
